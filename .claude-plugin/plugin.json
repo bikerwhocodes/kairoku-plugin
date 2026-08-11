@@ -1,0 +1,6 @@
+{
+  "name": "kairoku",
+  "version": "0.1.0",
+  "description": "The road from idea to shipped: spec \u2192 plan \u2192 Jira (TDD scaffold) \u2192 wave-parallel epic execution \u2192 QA \u2192 preview gate. Four writing skills, four station agents (Toryo, Hancho, Metsuke, Yuhitsu), and the rituals between them. Confluence/Jira are the systems of record; the repo stays clean.",
+  "author": { "name": "Neil Pandit" }
+}

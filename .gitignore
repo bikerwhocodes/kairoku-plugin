@@ -1,0 +1,16 @@
+# OS cruft
+.DS_Store
+
+# Local Claude Code state (never commit session settings)
+.claude/
+
+# Secrets — this repo must never hold credentials
+.env
+.env.*
+
+# Future tooling
+node_modules/
+
+# Logs & scratch
+*.log
+_to_delete/

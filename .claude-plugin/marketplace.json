@@ -1,0 +1,7 @@
+{
+  "name": "kairoku-marketplace",
+  "owner": { "name": "Neil Pandit" },
+  "plugins": [
+    { "name": "kairoku", "source": "./", "description": "Spec-to-ship product cycle for solo builders driving AI agents: writing skills, station agents, TDD Jira scaffold, wave-parallel epic execution, human preview gate." }
+  ]
+}
