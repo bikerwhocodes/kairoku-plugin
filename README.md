@@ -48,7 +48,7 @@ Agents write and run automated tests, but **`Manual test` subtasks and the Manua
 ## Install
 
 ```bash
-/plugin marketplace add <your-github-user>/kairoku-plugin
+/plugin marketplace add bikerwhocodes/kairoku-plugin
 /plugin install kairoku@kairoku-marketplace
 ```
 
