@@ -1,6 +1,94 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "kairoku",
-  "version": "0.1.0",
-  "description": "The road from idea to shipped: spec \u2192 plan \u2192 Jira (TDD scaffold) \u2192 wave-parallel epic execution \u2192 QA \u2192 preview gate. Four writing skills, four station agents (Toryo, Hancho, Metsuke, Yuhitsu), and the rituals between them. Confluence/Jira are the systems of record; the repo stays clean.",
-  "author": { "name": "Neil Pandit" }
+  "displayName": "Kairoku",
+  "version": "0.2.0",
+  "description": "The road from idea to shipped: capture → spec → plan → Jira (TDD scaffold) → wave-parallel epic execution with honest Jira status and real PRs → QA → preview gate. Station agents, protocol skills, and workflows, wired to the Kairoku app and Atlassian.",
+  "author": { "name": "Neil Pandit" },
+  "homepage": "https://github.com/bikerwhocodes/kairoku-plugin",
+  "repository": "https://github.com/bikerwhocodes/kairoku-plugin",
+  "license": "MIT",
+  "keywords": [
+    "jira",
+    "confluence",
+    "atlassian",
+    "sprint",
+    "planning",
+    "tdd",
+    "orchestration",
+    "delivery"
+  ],
+  "userConfig": {
+    "jira_project_key": {
+      "type": "string",
+      "title": "Jira project key",
+      "description": "The Jira project the delivery loop runs in, e.g. KAIR. Agents create nothing outside it.",
+      "required": true
+    },
+    "confluence_space_key": {
+      "type": "string",
+      "title": "Confluence space key",
+      "description": "The space holding Planning/, Releases/, Sprints/ and QA/, e.g. KA.",
+      "required": true
+    },
+    "atlassian_site": {
+      "type": "string",
+      "title": "Atlassian site URL",
+      "description": "Your Atlassian Cloud site, e.g. https://acme.atlassian.net. Used by the bin/kairoku-jira sprint helper.",
+      "required": false
+    },
+    "atlassian_email": {
+      "type": "string",
+      "title": "Atlassian account email",
+      "description": "Email for the Atlassian API token. Only used by bin/kairoku-jira for sprint and board operations the MCP server does not expose.",
+      "required": false
+    },
+    "atlassian_api_token": {
+      "type": "string",
+      "title": "Atlassian API token",
+      "description": "Create at id.atlassian.com/manage-profile/security/api-tokens. Without it, sprint start/close stays a manual step and everything else still works.",
+      "sensitive": true,
+      "required": false
+    },
+    "kairoku_url": {
+      "type": "string",
+      "title": "Kairoku app URL",
+      "description": "Base URL of your Kairoku deployment, e.g. https://kairoku.vercel.app. Leave blank to run without the app.",
+      "required": false
+    },
+    "kairoku_token": {
+      "type": "string",
+      "title": "Kairoku MCP token",
+      "description": "Bearer token from Kairoku Settings → MCP access. Shown once at creation.",
+      "sensitive": true,
+      "required": false
+    },
+    "kairoku_project_slug": {
+      "type": "string",
+      "title": "Kairoku project slug",
+      "description": "Which Kairoku project this repository builds. Agents default their reads and progress notes to it.",
+      "required": false
+    },
+    "test_command": {
+      "type": "string",
+      "title": "Test command",
+      "description": "How this repository runs its test suite.",
+      "default": "bun test",
+      "required": false
+    },
+    "check_command": {
+      "type": "string",
+      "title": "Lint + build command",
+      "description": "The gate every story must pass before its commit.",
+      "default": "bun run lint && bun run build",
+      "required": false
+    },
+    "default_branch": {
+      "type": "string",
+      "title": "Default branch",
+      "description": "Branch that epic pull requests target.",
+      "default": "main",
+      "required": false
+    }
+  }
 }
