@@ -26,6 +26,29 @@ Specs in a repo rot: they drift from the code, clutter reviews, and duplicate th
 
 Skim whatever exists: the repo, prior Confluence pages (search by topic), earlier conversation. Come to the interview already knowing what's knowable.
 
+### 1b. Pick the scale, and work at it
+
+Not everything needs the same spec. Decide which of these you are writing before you start
+interviewing, and say which you chose — a change dressed as a product spec wastes an afternoon,
+and a product dressed as a change ships something nobody agreed to.
+
+| Scale | When | What it gets |
+|---|---|---|
+| **change** | An adjustment to something already specified | No spec at all — route to `/kairoku:spec-change`, which handles the ripple into the plan and the open issues |
+| **feature** | New capability inside an existing product | Read the existing spec and the code first. Write a *feature spec* plus an explicit delta: which sections of the parent spec change, and how. Two or three questions, not twelve — most constraints are already settled |
+| **product** | Something new from the ground up | The full interview below, plus research: how comparable products solve this, what the obvious approaches cost, what the stack actually supports today |
+
+**Product scale earns research.** Use WebSearch for how the problem is solved elsewhere and
+what users complain about; use context7 for library and framework facts rather than memory,
+which goes stale. For a genuinely open design space, `/kairoku:spec-research` fans that out
+across several angles and cross-checks the findings before they reach the spec.
+
+**Feature scale earns reading, not searching.** The answers are usually in the repo and the
+parent spec. Ten minutes there beats a web search.
+
+If the idea has not been captured yet, `/kairoku:capture` first — it takes two minutes and gives
+this interview somewhere to start from.
+
 ### 2. Interview — one question at a time
 
 Ask exactly one question per message; prefer multiple-choice (use the AskUserQuestion tool when available). Cover, in rough order: the problem and who has it, what success looks like, constraints (stack, auth, integrations), scope edges, and non-goals. Apply YAGNI ruthlessly — challenge any feature that doesn't serve the stated problem.
