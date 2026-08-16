@@ -115,11 +115,45 @@ plugin deliberately does not declare its own, because a second server would dupl
 
 **Optional:**
 
-- **Kairoku app** — set `kairoku_url` and a token from Settings → MCP access. Without it,
-  everything runs on Jira and Confluence alone; you lose the dashboard and progress notes.
+- **Kairoku app** — set `kairoku_url`, then sign in as below. Without it, everything runs on Jira
+  and Confluence alone; you lose the dashboard and progress notes.
 - **Atlassian API token** — enables `bin/kairoku-jira`, which covers boards, sprints and ranking
   over the Agile API that the MCP server does not expose. Without it, starting and closing a
   sprint is a manual click and nothing else changes.
+
+### Signing in to the app
+
+The Kairoku server authenticates over OAuth. Point a client at it, and the first call comes back
+401 saying where to sign in; you finish in a browser and the grant survives restarts. There is no
+token to copy and nothing to rotate by hand.
+
+```
+/mcp  →  kairoku  →  Authenticate          # or: claude mcp login kairoku
+```
+
+The plugin sends no `Authorization` header, and that is the point. Claude Code treats a header
+the server rejects as a failed connection rather than falling back to sign-in, so shipping a
+default token would turn every expired credential into what looks like an outage — with no way
+out of it from the UI. `kairoku_token` survives for headless runs only, which have no browser and
+must put the token into their own config.
+
+**Codex and auggie read their own config, not this plugin's.** A Claude Code plugin cannot
+register a server for them, so each client is configured once by hand — same URL, same sign-in:
+
+```toml
+# ~/.codex/config.toml            then: codex mcp login kairoku
+[mcp_servers.kairoku]
+url = "https://kairoku.io/api/mcp"
+```
+
+```jsonc
+// ~/.augment/settings.json       or: auggie mcp add-json kairoku '<json>'
+{ "mcpServers": { "kairoku": { "type": "http", "url": "https://kairoku.io/api/mcp" } } }
+```
+
+auggie has no login subcommand; open `/mcp` in the TUI and authenticate when it offers. For CI,
+where none of the three can open a browser, Codex takes `bearer_token_env_var` and the others
+take a static header — that is what a token from Settings → MCP access is still for.
 
 ## Where things live
 

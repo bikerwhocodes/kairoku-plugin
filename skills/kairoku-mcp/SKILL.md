@@ -86,8 +86,31 @@ linking. `get_plan` and check for existing Jira keys before telling anyone to pu
 **Always** `add_progress_note` at the end of a session or wave, so the dashboard is not blind
 to work that happened outside it.
 
+## Signing in
+
+The server is an OAuth resource server and the plugin sends no token of its own. A call against
+a signed-out server comes back 401 with a `WWW-Authenticate` header, the client reads the
+authorization server out of it, and the user finishes in a browser. Once per machine, not once
+per session — the grant survives restarts. Nobody pastes a token any more.
+
+An agent cannot do this for the user. If the tools are missing or every call 401s, name the
+command and move on:
+
+| Client | Sign in with |
+|---|---|
+| Claude Code | `/mcp` → **kairoku** → **Authenticate**, or `claude mcp login kairoku` |
+| OpenAI Codex CLI | `codex mcp login kairoku` |
+| Augment auggie | the TUI's `/mcp` popover, which offers it once the server 401s |
+
+Headless runs have no browser, so a token from Settings → MCP access still works there — but the
+run supplies it, not the plugin (Codex's `bearer_token_env_var`, or a `--mcp-config` carrying the
+header). Never ask an interactive user for one: Claude Code treats a rejected `Authorization`
+header as a failed connection and stops, so a stale token reads as an outage and the sign-in
+prompt never appears.
+
 ## When the server is not connected
 
-Kairoku is optional. If the MCP server is absent or unconfigured, say so once, then carry on —
-Jira and Confluence are enough to run the loop. Do not fail a story because the dashboard is
-unreachable, and do not silently skip the progress note without mentioning it.
+Kairoku is optional. If the MCP server is absent, unconfigured, or signed out, say so once — with
+the sign-in command if that is what it needs — then carry on. Jira and Confluence are enough to
+run the loop. Do not fail a story because the dashboard is unreachable, and do not silently skip
+the progress note without mentioning it.
