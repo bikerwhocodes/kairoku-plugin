@@ -64,6 +64,15 @@ const PLAN_SCHEMA = {
         properties: { key: { type: 'string' }, reason: { type: 'string' } },
       },
     },
+    alreadyDone: {
+      type: 'array',
+      description: 'stories whose work is already built and merged. Not the same as blocked — nothing is stuck, there is simply nothing to do. Give the evidence: commit, merge, branch it landed on',
+      items: {
+        type: 'object',
+        required: ['key', 'evidence'],
+        properties: { key: { type: 'string' }, evidence: { type: 'string' } },
+      },
+    },
     crossEpicBlocks: { type: 'array', items: { type: 'string' } },
     notes: { type: 'string' },
   },
@@ -150,6 +159,23 @@ not transition anything — this stage only reads.
 
 1. Read the epic and every child story in full, including their "Automated tests" / "Manual test"
    subtasks and the "Flow test — <phase>" story if one exists.
+
+   **Query in two passes, narrow fields first.** A single JQL over an epic's children asking for
+   description + issuelinks + subtasks + parent will overflow one tool result on a ten-story
+   epic — each issue drags its whole parent object along. Pass one: the child list with
+   \`fields: ["summary","status","issuetype"]\` only. Pass two: \`getJiraIssue\` per story for the
+   detail, never \`parent\` in the field list. If a result does overflow and gets spilled to a
+   file, parse the file rather than re-querying.
+
+   **Check what is already built before scheduling anything.** Read the repository's history for
+   the epic key and each story key. Work that is already committed and merged goes in
+   \`alreadyDone\` with its commit and merge, not into a wave — dispatching an agent to rebuild
+   merged code is the most expensive mistake this stage can make. It is also not \`blocked\`:
+   blocked means stuck, alreadyDone means finished.
+
+   **Confirm you are in the right repository.** The epic's stories name paths; if the working
+   directory does not contain them, stop and say which repository this epic belongs to rather
+   than planning waves against the wrong tree.
 2. Build the dependency graph from "Blocks" links and each story's Dependencies section. Also
    look for implicit dependencies the links miss: two stories that will edit the same module,
    a story that creates the type another consumes.
@@ -172,8 +198,10 @@ if (!plan) {
 const waves = (plan.waves || []).filter((wave) => wave && wave.length)
 const scheduled = waves.reduce((total, wave) => total + wave.length, 0)
 
-log(`${epicKey} — ${plan.epicName}: ${scheduled} stories across ${waves.length} wave(s), ${plan.blocked.length} blocked`)
+const alreadyDone = plan.alreadyDone || []
+log(`${epicKey} — ${plan.epicName}: ${scheduled} stories across ${waves.length} wave(s), ${plan.blocked.length} blocked, ${alreadyDone.length} already built`)
 for (const entry of plan.blocked) log(`  blocked ${entry.key}: ${entry.reason}`)
+for (const entry of alreadyDone) log(`  already built ${entry.key}: ${entry.evidence}`)
 
 if (dryRun) {
   return {
@@ -181,15 +209,31 @@ if (dryRun) {
     epic: epicKey,
     name: plan.epicName,
     integrationBranch: plan.integrationBranch,
+    baseBranch: plan.baseBranch,
+    flowTestKey: plan.flowTestKey,
     waves: waves.map((wave, index) => ({ wave: index + 1, stories: wave.map((s) => `${s.key} — ${s.summary}`) })),
     blocked: plan.blocked,
+    alreadyDone,
     crossEpicBlocks: plan.crossEpicBlocks || [],
+    // The scout's prose is the most useful thing a dry run produces — wrong-repo warnings,
+    // the reasoning behind the partition, protocol deviations it noticed on the way past.
+    // Dropping it leaves the caller reading a wave list with none of the caveats attached.
+    notes: plan.notes,
     note: 'Nothing was changed. Re-run without dryRun to execute.',
   }
 }
 
 if (!scheduled) {
-  return { epic: epicKey, error: 'Nothing runnable.', blocked: plan.blocked }
+  const done = alreadyDone
+  return {
+    epic: epicKey,
+    error: done.length && !plan.blocked.length
+      ? 'Nothing to run — every story is already built and merged.'
+      : 'Nothing runnable.',
+    blocked: plan.blocked,
+    alreadyDone: done,
+    notes: plan.notes,
+  }
 }
 
 // ---------------------------------------------------------------------------
