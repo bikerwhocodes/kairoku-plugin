@@ -23,9 +23,17 @@ Default project: `${user_config.kairoku_project_slug}`.
 | `search_documents(query, project?)` | Finding the document that mentions a thing when you don't know its title |
 | `update_item_status(item_id, status, note?)` | A plan item genuinely changed state: `not_started` / `in_progress` / `blocked` / `done` |
 | `add_progress_note(project, note)` | A milestone worth a line on the activity feed |
+| `create_document(project, type, title, content)` | Filing a spec, plan, or report **into** Kairoku. Types: `spec`, `plan`, `prd`, `research`, `note`, and the design/diagram kinds |
+| `update_document(document_id, content, title?)` | Revising one you (or the Confluence pull) already put there — the correct move whenever the title already exists |
+| `upsert_plan(project, release, phases[])` | Writing plan structure: phases, items, `testNotes`. Idempotent by name; never overwrites an item's status or its Jira key |
 
 `get_project` before `get_plan` before anything else — one call usually answers what three
 Jira searches would.
+
+**List before you create.** `create_document` has no dedupe, and no tool on this server can
+delete anything. The app pulls the whole Confluence space in, so a document you are about to
+create very often already exists under the same title. `list_documents` first, then
+`update_document` on the id you find. A duplicate is permanent until a human removes it in the UI.
 
 ## Reporting progress without noise
 
@@ -54,20 +62,29 @@ The things that happen while work is being done.
 So: never call `createJiraIssue` for plan structure, and never publish a page that the app also
 manages. Write the plan into Kairoku and let the app push it.
 
-## Hybrid mode (current)
+## What is still the human's click
 
-Kairoku's MCP surface is read-plus-progress today — there are no document or plan write tools
-yet (SPEC §8). Until they land:
+The write tools landed (SPEC §8 v1.1), so authoring now happens *in* Kairoku. What did **not**
+land is anything that fires the app's outbound sync — and that omission is deliberate:
 
-- **Read** context from Kairoku as above.
-- **Write** documents to Confluence and plan structure to Jira the way the writing skills do
-  now, and **link back**: put the Kairoku project and document URLs on the pages you create so
-  the two records point at each other.
-- **Always** `add_progress_note` at the end of a session or wave, so the dashboard is not blind
-  to work that happened outside it.
+| Still manual | Why |
+|---|---|
+| Creating a project or release | Quick capture is the app's front door, and stage is a human judgment |
+| **Push plan → Jira** (Sync tab) | The only writer that creates `sync_mappings`. No `push_plan` tool exists |
+| **Publish document → Confluence** | Same: the publish path is what records the page mapping |
+| Changing a release stage | A gate, not a status |
 
-When `create_document` / `upsert_plan` / `push_plan` ship, the writing skills switch to writing
-into Kairoku and triggering the app's push. Nothing else in this protocol changes.
+So the shape is: **agents write into Kairoku, the human pushes out of it.** Write the document
+or the plan, then say plainly what the user needs to click and what scope to push. Do not
+route around it by writing to Confluence or Jira yourself — that is the second-writer problem
+this whole protocol exists to prevent.
+
+One consequence worth knowing: a plan written by `upsert_plan` carries no mappings until it is
+pushed. If its items already have Jira issues, pushing again duplicates them rather than
+linking. `get_plan` and check for existing Jira keys before telling anyone to push.
+
+**Always** `add_progress_note` at the end of a session or wave, so the dashboard is not blind
+to work that happened outside it.
 
 ## When the server is not connected
 

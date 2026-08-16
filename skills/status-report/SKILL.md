@@ -72,7 +72,8 @@ Add, from Kairoku if connected: `get_plan` for computed release progress, and th
 ## Publishing
 
 Render in the terminal by default. Offer to publish — as a Confluence page under the project's
-Planning parent, or as a Kairoku document once write tools exist. Ask before publishing; a
+Planning parent, or as a Kairoku document (`create_document`, type `note` — list first, and
+`update_document` when the report already exists). Ask before publishing; a
 status report that appears without warning is rarely welcome.
 
 `$ARGUMENTS` scopes to a sprint, release, or project. Default: the active sprint.

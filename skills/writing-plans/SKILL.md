@@ -5,7 +5,7 @@ description: Convert an approved spec into a phased, test-first implementation p
 
 # Writing Plans
 
-Turn a spec into a plan a builder — human or AI — could execute without asking questions. The plan's home is **Confluence**, next to its spec; the repo never holds plan files and nothing is ever committed. The implementation agent later derives its work directly from this plan.
+Turn a spec into a plan a builder — human or AI — could execute without asking questions. The plan's home is **Kairoku**, as phases and items alongside its spec — or Confluence directly when no Kairoku project holds this work (see *Where it lands*). The repo never holds plan files and nothing is ever committed. The implementation agent later derives its work directly from this plan.
 
 ## Workspace rules
 
@@ -58,11 +58,36 @@ Format per task:
 
 Reread the draft as the person who has to build it: hunt placeholders, missing test notes, tasks that fail the scope test, phases whose "Done when" isn't observable, and anything the spec promises that no task delivers (walk the spec's Goals list one by one). Fix, then show the user and iterate to approval. Unattended: mark `draft — pending review`, list assumptions, continue.
 
-## Publish to Confluence
+## Where it lands
 
-Same mechanics as writing-specs (find the Atlassian tools; create-or-update by title search). Publish the plan **as a child of the spec page** when a spec page exists, so the pair travels together. Record the page URL at the top of the temp `plan.md` and report it.
+A plan has two halves, and Kairoku holds them differently.
 
-No Atlassian tools → stop, leave the draft, say what to connect. Dry run → write `confluence-payload.md` with the exact would-be page instead, and say nothing was created.
+**The structure** — phases, items, and the `testNotes` on each — goes in with
+`upsert_plan(project, release, phases[])`. This is the half that becomes Jira: the app's push
+turns each phase into an epic, each item into a story, and each `testNotes` into the TDD
+scaffold. It is idempotent, matching phases and items by name, and it will not overwrite an
+item's status or its Jira key — so re-running it after an edit is safe.
+
+**The prose** — the reasoning, the sequencing argument, the "done when" per phase — goes in as
+a document: `create_document(project, type: "plan", title, content)`, or `update_document` on a
+re-run. Check `list_documents(project)` first; the app pulls the Confluence space in, so the
+page may already be there, and a duplicate cannot be deleted over MCP.
+
+Then **stop and hand the push to the user.** There is no `push_plan` tool — the Jira push lives
+on the app's Sync tab, by design: it is the only writer that maintains the `sync_mappings`
+tying each issue back to its item. Give them the release name and the scope to push.
+
+> **Push once.** A plan written by `upsert_plan` carries no mappings of its own. If these items
+> already have Jira issues — because the plan was pushed before, or the issues were created by
+> hand — pushing again creates duplicates rather than linking. When in doubt, `get_plan` and
+> look for existing Jira keys before telling anyone to push.
+
+**No Kairoku project, or the server is unconfigured?** Publish to Confluence directly: same
+mechanics as writing-specs (find the Atlassian tools; create-or-update by title search), as a
+child of the spec page when one exists, so the pair travels together. Record the page URL at
+the top of the temp `plan.md` and report it. Say which route you took.
+
+No Atlassian tools either → stop, leave the draft, say what to connect. Dry run → write `confluence-payload.md` with the exact would-be page instead, and say nothing was created.
 
 ## Hand off
 

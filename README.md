@@ -148,8 +148,13 @@ kairoku/
 The first test app for Kairoku is Kairoku. The loop: run it, notice friction, fix the plugin,
 and when a piece proves out, graduate it into the app as a feature.
 
-- **MCP write tools** — `create_document`, `upsert_plan`, `push_plan`, `get_epic_brief` so the
-  plugin writes into the app rather than around it. Until then it runs in hybrid mode.
+- ~~**MCP write tools**~~ — `create_document`, `update_document` and `upsert_plan` shipped
+  (SPEC §8 v1.1), so the plugin writes *into* the app rather than around it. Still outbound-only
+  by hand: pushing a plan to Jira and publishing a document to Confluence are the app's own
+  buttons, because they are what maintain the mappings.
+- **`get_epic_brief`** — everything an execution session needs in one call, instead of the
+  scout agent reassembling it from Jira each run.
+- **A phase-status tool** — an item-less phase is stuck at `not_started` with no way to move it.
 - **Sprint ops in the app** — retires `bin/kairoku-jira` and its second credential.
 - **Defect intake** — bugs need Context/Repro/Expected, not story anatomy.
 - **Release notes** from closed epics and journal entries.

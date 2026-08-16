@@ -17,7 +17,7 @@ This matters because issues created any other way have no mapping. The app's "Re
 
 So, in order:
 
-1. **Kairoku project exists** → write the phases and items into Kairoku, then trigger the push (`upsert_plan` + `push_plan` when those tools exist; until then, hand the user the Sync tab and the exact scope to push). Everything below still applies — it is what the *item* content must contain for the push to produce a good issue.
+1. **Kairoku project exists** → write the phases and items into Kairoku with `upsert_plan`, then hand the push to the user: the Sync tab, and the exact release scope to push. There is no `push_plan` tool and that is deliberate — the app's push is the only writer that creates the mappings. Everything below still applies; it is what the *item* content must contain for the push to produce a good issue. Check `get_plan` for existing Jira keys before telling anyone to push — a second push of already-pushed items duplicates them.
 2. **No Kairoku project** → create in Jira directly, using the whole procedure below. This is the fallback, and it is fine: Kairoku is optional.
 3. **Kairoku exists but you were asked to create directly anyway** → do it, and say plainly in your report that these issues will not appear on the Plan tab until someone reconciles them. Do not bury that.
 

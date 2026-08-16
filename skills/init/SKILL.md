@@ -48,4 +48,4 @@ in Kairoku and Confluence.
 ## 4. Report
 
 Every page link, what is still manual, and the first next step — usually `/kairoku:capture` if
-there is no idea written down yet, or `/kairoku:spec` if there is.
+there is no idea written down yet, or `/kairoku:writing-specs` if there is.

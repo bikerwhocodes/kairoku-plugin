@@ -10,7 +10,7 @@ The point of this skill is that a thought does not stay in your head. Not a spec
 not a ticket — somewhere structured, with enough context that it still makes sense in a month.
 
 Keep it short. Capture should take two minutes; if it turns into an interview you have
-overshot, and the user should be running `/kairoku:spec` instead.
+overshot, and the user should be running `/kairoku:writing-specs` instead.
 
 ## 1. Take the thought as given
 
@@ -58,19 +58,26 @@ The document is short and honest:
 
 Open questions matter more than answers here. They are what the spec interview will start from.
 
-### Hybrid mode (current)
+### What you can and cannot do here (see `kairoku-mcp`)
 
-Kairoku's MCP surface cannot create projects or documents yet (see `kairoku-mcp`). Until it can:
+**Documents you can write.** `create_document(project, type: "note", title, content)` puts the
+capture straight into Kairoku, where the app's chat and this terminal are appending to the same
+record. Call `list_documents` first — the app pulls the Confluence space in, so the title may
+already exist, and duplicates cannot be deleted over MCP.
 
-- write the document to Confluence under the project's Planning parent, or under a
-  `Planning/Ideas` page for ideas with no project yet,
-- tell the user the one line to quick-capture in the app so the board shows it, and give them
-  the page link to attach,
-- do not silently skip this — an idea that only exists in Confluence is half-captured, and the
+**Projects you cannot.** There is no create-project tool: quick capture is the app's own front
+door and it stays that way. So for a genuinely new idea:
+
+- give the user the one line to quick-capture in the app, which creates the project and its
+  `v1` release at `idea` stage in one act,
+- then write the document onto it once it exists — or, if they would rather not switch windows
+  right now, write the document to Confluence under `Planning/Ideas` and tell them plainly that
+  it is not on the board yet,
+- do not silently skip this. An idea that only exists in Confluence is half-captured, and the
   board is what they actually look at.
 
 ## 4. Reply in three lines
 
-What you captured, where it lives (with the link), and the route onward — `/kairoku:spec` when
+What you captured, where it lives (with the link), and the route onward — `/kairoku:writing-specs` when
 they are ready to think it through, or nothing at all if it is just parked. Parking is a
 legitimate outcome; say so rather than pushing them toward a spec they did not ask for.

@@ -32,8 +32,8 @@ Walk the loop in order and stop at the first gate that is actually waiting:
 | What you find | The answer |
 |---|---|
 | No idea captured yet | `/kairoku:capture "<thought>"` |
-| An idea at `idea` stage, nothing specced | `/kairoku:spec` |
-| A spec approved, no plan | `/kairoku:plan` |
+| An idea at `idea` stage, nothing specced | `/kairoku:writing-specs` |
+| A spec approved, no plan | `/kairoku:writing-plans` |
 | A plan approved, nothing in Jira | push the plan from Kairoku's Sync tab |
 | Stories in Jira, no sprint filled | ask Hancho to fill the sprint |
 | A sprint page in draft | review and approve it — link it |
