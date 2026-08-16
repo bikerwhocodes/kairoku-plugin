@@ -9,13 +9,25 @@ A coding agent gets **one issue** as its entire brief. It can't walk over to you
 
 Work in the same temp workspace as the spec/plan (`${TMPDIR:-/tmp}/specs-and-plans/<date>-<slug>/`); never write into the repo, never commit anything.
 
-## Inputs
+## Who creates the issues — read this first
 
-Resolve the plan: a Confluence plan page (fetch it), the workspace `plan.md`, or a plan agreed in conversation. No plan → route to **writing-plans**. Also collect the spec link — stories cite both.
+**Prefer the app's plan push.** When the Kairoku app holds this project, the plan goes into Kairoku as phases and plan items with `testNotes`, and the *app* pushes them to Jira. That push is what creates and maintains the `sync_mappings` tying each issue back to its plan item.
+
+This matters because issues created any other way have no mapping. The app's "Refresh status ← Jira" only maps issues it created, so directly-created issues never appear on the Plan tab, never feed release progress, and never show a tests indicator. The board looks fine and the dashboard quietly goes blind — which is worse than either failing loudly.
+
+So, in order:
+
+1. **Kairoku project exists** → write the phases and items into Kairoku with `upsert_plan`, then hand the push to the user: the Sync tab, and the exact release scope to push. There is no `push_plan` tool and that is deliberate — the app's push is the only writer that creates the mappings. Everything below still applies; it is what the *item* content must contain for the push to produce a good issue. Check `get_plan` for existing Jira keys before telling anyone to push — a second push of already-pushed items duplicates them.
+2. **No Kairoku project** → create in Jira directly, using the whole procedure below. This is the fallback, and it is fine: Kairoku is optional.
+3. **Kairoku exists but you were asked to create directly anyway** → do it, and say plainly in your report that these issues will not appear on the Plan tab until someone reconciles them. Do not bury that.
 
 ## Target selection
 
-Find the Jira tools among available tools (commonly `mcp__Atlassian_Rovo__*`; any Jira MCP works). Resolve the cloudId, list projects (`getVisibleJiraProjects`), and confirm the target project with the user unless they named it. Check its issue types: use **Epic + Story + Subtask** where available; fall back to Task when Story doesn't exist (team-managed projects vary). If Subtask isn't available, fold test tasks into the story checklist and say so.
+Find the Jira tools among available tools (commonly `mcp__*atlassian*__*`; any Jira MCP works). Resolve the cloudId, list projects (`getVisibleJiraProjects`), and confirm the target project with the user unless they named it — default to `${user_config.jira_project_key}`. Check its issue types: use **Epic + Story + Subtask** where available; fall back to Task when Story doesn't exist (team-managed projects vary). If Subtask isn't available, fold test tasks into the story checklist and say so.
+
+## Inputs
+
+Resolve the plan: a Confluence plan page (fetch it), the workspace `plan.md`, or a plan agreed in conversation. No plan → route to **writing-plans**. Also collect the spec link — stories cite both.
 
 ## Issue anatomy — the agent-readable story
 
@@ -69,4 +81,14 @@ Summaries are imperative and specific ("Add CSV column-mapping UI to import flow
 
 ## Report
 
-End with a table: issue key → summary → type → link, grouped by epic. Write the keys back into the workspace `plan.md` next to their tasks. Then offer the kickoff: a ready-to-paste prompt for the coding agent, e.g. *"Work KAIR-42: fetch the issue, read its Context links, write the tests from Test notes first, implement until acceptance criteria pass, then close the testing subtasks."*
+End with a table: issue key → summary → type → link, grouped by epic. Write the keys back into the workspace `plan.md` next to their tasks.
+
+Then hand off the execution, which is a command now rather than a pasted prompt:
+
+- **`/kairoku:run-epic <EPIC-KEY>`** — run one epic as dependency waves. Suggest `dryRun` first
+  so the user sees the wave plan before anything moves.
+- **`/kairoku:run-sprint "<name>"`** — once the stories are in a filled, approved sprint.
+
+Say which epics have no cross-epic `Blocks` links, since those can run concurrently.
+
+If you created issues directly while a Kairoku project exists, repeat the mapping warning here rather than only at the top — it is the one thing in this report that will bite silently later.
