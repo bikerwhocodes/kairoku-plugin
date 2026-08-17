@@ -134,8 +134,7 @@ token to copy and nothing to rotate by hand.
 The plugin sends no `Authorization` header, and that is the point. Claude Code treats a header
 the server rejects as a failed connection rather than falling back to sign-in, so shipping a
 default token would turn every expired credential into what looks like an outage — with no way
-out of it from the UI. `kairoku_token` survives for headless runs only, which have no browser and
-must put the token into their own config.
+out of it from the UI.
 
 **Codex and auggie read their own config, not this plugin's.** A Claude Code plugin cannot
 register a server for them, so each client is configured once by hand — same URL, same sign-in:
