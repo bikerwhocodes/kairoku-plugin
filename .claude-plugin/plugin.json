@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "kairoku",
   "displayName": "Kairoku",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "The road from idea to shipped: capture → spec → plan → Jira (TDD scaffold) → wave-parallel epic execution with honest Jira status and real PRs → QA → preview gate. Station agents, protocol skills, and workflows, wired to the Kairoku app and Atlassian.",
   "author": { "name": "Neil Pandit" },
   "homepage": "https://github.com/bikerwhocodes/kairoku-plugin",
@@ -58,8 +58,8 @@
     },
     "kairoku_token": {
       "type": "string",
-      "title": "Kairoku MCP token",
-      "description": "Bearer token from Kairoku Settings → MCP access. Shown once at creation.",
+      "title": "Kairoku MCP token (headless only)",
+      "description": "Leave blank. Interactive sessions sign in through the browser with /mcp → Authenticate; the plugin sends no Authorization header, because a header the server rejects makes Claude Code report the connection failed instead of offering sign-in. This is only for headless runs, which have no browser and must supply the token to their own config.",
       "sensitive": true,
       "required": false
     },

@@ -2,10 +2,7 @@
   "mcpServers": {
     "kairoku": {
       "type": "http",
-      "url": "${user_config.kairoku_url}/api/mcp",
-      "headers": {
-        "Authorization": "Bearer ${user_config.kairoku_token}"
-      }
+      "url": "${user_config.kairoku_url}/api/mcp"
     }
   }
 }
