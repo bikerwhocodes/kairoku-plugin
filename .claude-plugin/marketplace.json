@@ -1,7 +1,12 @@
 {
   "name": "kairoku-marketplace",
+  "description": "Kairoku — the spec-to-ship delivery harness for solo builders driving AI agents, with Kairoku, Jira and Confluence as the systems of record.",
   "owner": { "name": "Neil Pandit" },
   "plugins": [
-    { "name": "kairoku", "source": "./", "description": "Spec-to-ship product cycle for solo builders driving AI agents: writing skills, station agents, TDD Jira scaffold, wave-parallel epic execution, human preview gate." }
+    {
+      "name": "kairoku",
+      "source": "./",
+      "description": "Capture an idea, spec it, plan it, push it to Jira with a TDD scaffold, then execute epics as wave-parallel worktree-isolated agents that keep Jira honest and open real PRs. Station agents, protocol skills, workflows, and a human preview gate."
+    }
   ]
 }

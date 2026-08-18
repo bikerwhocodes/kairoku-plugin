@@ -5,7 +5,7 @@ description: Turn a rough idea into an approved spec through short, one-at-a-tim
 
 # Writing Specs
 
-Turn an idea into a validated, published spec. The spec's home is **Confluence** — the repo never holds design docs, so nothing here is ever committed to git. Drafts live in a temp workspace; the published page is the deliverable.
+Turn an idea into a validated, published spec. The spec's home is **Kairoku** — or Confluence directly when no Kairoku project holds this work (see step 8). Either way the repo never holds design docs, so nothing here is ever committed to git. Drafts live in a temp workspace; the published document is the deliverable.
 
 ## The hard gate
 
@@ -25,6 +25,32 @@ Specs in a repo rot: they drift from the code, clutter reviews, and duplicate th
 ### 1. Absorb context (read-only)
 
 Skim whatever exists: the repo, prior Confluence pages (search by topic), earlier conversation. Come to the interview already knowing what's knowable.
+
+### 1b. Pick the scale, and work at it
+
+Not everything needs the same spec. Decide which of these you are writing before you start
+interviewing, and say which you chose — a change dressed as a product spec wastes an afternoon,
+and a product dressed as a change ships something nobody agreed to.
+
+| Scale | When | What it gets |
+|---|---|---|
+| **change** | An adjustment to something already specified | No spec at all — route to `/kairoku:spec-change`, which handles the ripple into the plan and the open issues |
+| **feature** | New capability inside an existing product | Read the existing spec and the code first. Write a *feature spec* plus an explicit delta: which sections of the parent spec change, and how. Two or three questions, not twelve — most constraints are already settled |
+| **product** | Something new from the ground up | The full interview below, plus research: how comparable products solve this, what the obvious approaches cost, what the stack actually supports today |
+
+**Product scale earns research.** Use WebSearch for how the problem is solved elsewhere and
+what users complain about; use context7 for library and framework facts rather than memory,
+which goes stale. For a genuinely open design space, fan the research out: several subagents in
+one message, each on a different angle — how comparable products solve it, what the stack
+actually supports, what the failure modes are in the wild — then reconcile their findings
+before any of it reaches the spec. Contradictions between angles are the useful part; resolve
+them rather than averaging them.
+
+**Feature scale earns reading, not searching.** The answers are usually in the repo and the
+parent spec. Ten minutes there beats a web search.
+
+If the idea has not been captured yet, `/kairoku:capture` first — it takes two minutes and gives
+this interview somewhere to start from.
 
 ### 2. Interview — one question at a time
 
@@ -68,7 +94,25 @@ Reread the whole draft hunting for: placeholder text (TBD, "appropriate handling
 
 Show the spec (or its path) and ask for approval or edits. Iterate until approved. In unattended mode, mark the spec `draft — pending review` and proceed to publish anyway, saying so.
 
-### 8. Publish to Confluence
+### 8. Where it lands
+
+**If a Kairoku project holds this work, the spec goes into Kairoku, not into Confluence.**
+`create_document(project, type: "spec", title, content)` — or `update_document` when it is
+already there. Then tell the user to hit **Publish** on that document. The app's publish is
+what creates the Confluence page *and* records the mapping that keeps the two in step; a page
+you create yourself is a second copy the app will never recognise or update.
+
+Look before you write: `list_documents(project, type: "spec")` and `search_documents(title)`.
+The app pulls the Confluence space in, so the document often already exists — and
+`create_document` will cheerfully make a duplicate that no MCP tool can delete.
+
+Full protocol in the `kairoku-mcp` skill.
+
+**No Kairoku project, or the server is unconfigured?** Publish to Confluence directly with the
+procedure below. That is a legitimate route, not a degraded one — Kairoku is optional. Say
+which route you took either way.
+
+### 8b. Publishing to Confluence directly
 
 Find Atlassian tooling among available tools (commonly `mcp__Atlassian_Rovo__*` in Claude/Cowork sessions; any Confluence MCP works — search available tools for "confluence"). Then:
 
